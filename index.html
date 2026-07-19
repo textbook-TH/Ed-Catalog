@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="th" class="h-full scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ed'Catalog : คลังหนังสือวิศวะ</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Sarabun -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Sarabun', 'sans-serif'],
+                    },
+                    colors: {
+                        space: {
+                            950: '#070a13',
+                            900: '#0d1222',
+                            800: '#151c33',
+                            700: '#1f294d',
+                            600: '#2c3b6e',
+                            light: '#4f46e5'
+                        },
+                        neon: {
+                            cyan: '#06b6d4',
+                            violet: '#8b5cf6',
+                            rose: '#f43f5e',
+                            amber: '#f59e0b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Premium Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d1222;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f294d;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4f46e5;
+        }
+        
+        /* Blur background glass effect helper */
+        .glassmorphism {
+            background: rgba(13, 18, 34, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Premium Smooth Neon Blinking Animation for Discount Tag */
+        @keyframes neonBlink {
+            0%, 100% {
+                opacity: 1;
+                filter: brightness(1) drop-shadow(0 0 4px rgba(244, 63, 94, 0.4));
+            }
+            50% {
+                opacity: 0.82;
+                filter: brightness(1.2) drop-shadow(0 0 10px rgba(244, 63, 94, 0.75));
+            }
+        }
+        .animate-blink {
+            animation: neonBlink 1.4s infinite ease-in-out;
+        }
+
+        /* Force hide any reachable sites bar in sandbox if same-origin */
+        .kd-button, .google-sites-info-icon, [aria-label="Report abuse"], [aria-label="ข้อมูลเพิ่มเติม"], [aria-label="Information"] {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+        }
+    </style>
+</head>
+<body class="bg-space-950 text-slate-100 font-sans min-h-full flex flex-col selection:bg-indigo-500/30 selection:text-indigo-200 antialiased overflow-x-hidden">
+
+    <!-- Header Banner -->
+    <header class="relative overflow-hidden border-b border-space-800 bg-space-900/60 z-10">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[150px] bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 blur-[120px] rounded-full pointer-events-none"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 py-8 sm:py-12 relative flex flex-col items-center md:items-start md:flex-row md:justify-between gap-6">
+            <div class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 shrink-0">
+                    <i class="fa-solid fa-book-open-reader text-2xl text-white animate-pulse"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-200 to-violet-300">
+                        Ed'Catalog : คลังหนังสือวิศวะ
+                    </h1>
+                    <p class="text-xs sm:text-sm text-slate-400 mt-1 flex items-center justify-center sm:justify-start gap-2">
+                        <span class="inline-flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        งานเทคโนโลยีการศึกษา คณะวิศวกรรมศาสตร์ สจล.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Control Panel (Search and Filter) -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-8 relative">
+        <section class="mb-8 max-w-4xl mx-auto">
+            <div class="flex flex-col md:flex-row gap-4 items-stretch md:items-center w-full">
+                <!-- Search Input Container -->
+                <div class="relative flex-grow">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fa-solid fa-magnifying-glass text-slate-400"></i>
+                    </div>
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        placeholder="พิมพ์รายละเอียดเพื่อค้นหา..." 
+                        class="w-full pl-11 pr-12 py-3.5 bg-space-900 border border-space-800 rounded-2xl text-slate-100 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/50 shadow-inner transition-all duration-200 text-sm sm:text-base"
+                        oninput="handleFilter()"
+                    >
+                    <div id="clearSearchBtn" class="absolute inset-y-0 right-0 pr-4 flex items-center cursor-pointer hidden" onclick="clearSearch()">
+                        <i class="fa-solid fa-circle-xmark text-slate-500 hover:text-slate-300"></i>
+                    </div>
+                </div>
+
+                <!-- Dropdown ภาควิชา -->
+                <div class="relative shrink-0 md:w-72">
+                    <select id="deptFilter" onchange="handleDropdownFilter()" class="w-full pl-4 pr-10 py-3.5 bg-space-900 border border-space-800 rounded-2xl text-slate-100 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/50 shadow-inner transition-all duration-200 text-sm cursor-pointer appearance-none">
+                        <option value="all">เลือกภาควิชา</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400">
+                        <i class="fa-solid fa-chevron-down text-xs"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Books Catalog Grid Area -->
+        <section class="relative">
+            <!-- Skeleton Loader -->
+            <div id="skeletonLoader" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div class="bg-space-900/40 border border-space-800 rounded-3xl p-4 animate-pulse h-[450px] flex flex-col justify-between">
+                    <div class="bg-space-800 rounded-2xl w-full aspect-[1/1.414] mb-4"></div>
+                    <div class="h-4 bg-space-800 rounded w-2/3 mb-2"></div>
+                    <div class="h-4 bg-space-800 rounded w-1/2"></div>
+                </div>
+                <div class="bg-space-900/40 border border-space-800 rounded-3xl p-4 animate-pulse h-[450px] flex flex-col justify-between">
+                    <div class="bg-space-800 rounded-2xl w-full aspect-[1/1.414] mb-4"></div>
+                    <div class="h-4 bg-space-800 rounded w-2/3 mb-2"></div>
+                    <div class="h-4 bg-space-800 rounded w-1/2"></div>
+                </div>
+                <div class="bg-space-900/40 border border-space-800 rounded-3xl p-4 animate-pulse h-[450px] flex flex-col justify-between">
+                    <div class="bg-space-800 rounded-2xl w-full aspect-[1/1.414] mb-4"></div>
+                    <div class="h-4 bg-space-800 rounded w-2/3 mb-2"></div>
+                    <div class="h-4 bg-space-800 rounded w-1/2"></div>
+                </div>
+            </div>
+
+            <!-- Empty Search Results State -->
+            <div id="emptyState" class="hidden py-24 text-center">
+                <div class="w-16 h-16 bg-space-800/60 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-4 border border-space-700">
+                    <i class="fa-solid fa-folder-open text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-200">ไม่พบหนังสือที่ตรงกับคำค้นหาของคุณ</h3>
+                <p class="text-sm text-slate-500 mt-1">ลองเปลี่ยนคำค้นหาหรือเลือกภาควิชาอื่น ๆ ด้านบน</p>
+            </div>
+
+            <!-- Error State (Robust fallback when sheet fetch fails) -->
+            <div id="errorState" class="hidden py-24 text-center">
+                <div class="w-16 h-16 bg-rose-500/10 text-rose-400 rounded-full flex items-center justify-center mx-auto mb-4 border border-rose-500/20">
+                    <i class="fa-solid fa-circle-exclamation text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-200">ไม่สามารถโหลดข้อมูลหนังสือได้ในขณะนี้</h3>
+                <p class="text-sm text-slate-500 mt-1">เกิดข้อผิดพลาดในการดึงข้อมูลจาก Server กรุณาตรวจสอบการเชื่อมต่อของคุณ</p>
+                <button onclick="fetchBooks()" class="mt-5 px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white text-sm font-bold rounded-xl shadow-lg transition-all flex items-center gap-2 mx-auto">
+                    <i class="fa-solid fa-arrows-rotate animate-spin-reverse"></i> ลองใหม่อีกครั้ง
+                </button>
+            </div>
+
+            <!-- Dynamic Books Grid -->
+            <div id="booksGrid" class="hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Loaded dynamically by Javascript -->
+            </div>
+
+            <!-- Pagination Controls -->
+            <div id="paginationContainer" class="flex justify-center items-center gap-2 mt-12 pb-6">
+                <!-- Rendered dynamically by Javascript -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Interactive PDF Viewer Modal -->
+    <div id="bookModal" class="fixed inset-0 z-50 overflow-y-auto hidden items-center justify-center p-4">
+        <div id="modalOverlay" class="fixed inset-0 bg-space-950/90 backdrop-blur-md opacity-0 transition-opacity duration-300" onclick="closeModal()"></div>
+        
+        <div id="modalContainer" class="relative w-full max-w-5xl bg-space-900 border border-space-800 rounded-3xl overflow-y-auto md:overflow-hidden shadow-2xl transition-all duration-350 scale-95 opacity-0 z-10 flex flex-col md:flex-row max-h-[92vh] md:max-h-[85vh]">
+            <!-- Close Button (X) -->
+            <button onclick="closeModal()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-space-800/85 hover:bg-space-700/90 backdrop-blur-sm flex items-center justify-center text-slate-400 hover:text-white transition-colors z-30 shadow-md" title="กลับหน้าแรก">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- Left column: Book Cover Container -->
+            <div class="w-full md:w-[350px] lg:w-[380px] shrink-0 bg-space-950 p-6 flex flex-col justify-center items-center relative border-none md:border-r border-space-800/80">
+                <div id="modalViewerContainer" class="w-full flex items-center justify-center relative">
+                    <!-- Loaded dynamically via javascript -->
+                </div>
+                
+                <!-- Mobile-Only Button Block -->
+                <div class="w-full mt-5 pb-6 md:hidden flex flex-col gap-3">
+                    <a id="modalExternalLinkMobile" href="#" target="_blank" class="w-full py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white rounded-xl text-center text-sm font-bold transition-all shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2 border border-indigo-500/30">
+                        <i class="fa-solid fa-up-right-from-square text-base"></i> เปิดดูไฟล์เต็มผ่าน Google Drive
+                    </a>
+                    
+                    <!-- Mobile-Only Large Interactive Click-to-Copy Book ID Badge -->
+                    <div id="modalIdBadgeMobile" onclick="copyIdToClipboard(true)" class="group w-full py-3.5 bg-space-900/90 hover:bg-space-800/70 border border-indigo-500/30 hover:border-indigo-500/50 text-white rounded-xl text-center transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer" title="คลิกเพื่อคัดลอกรหัส">
+                        <span class="text-indigo-400 font-black text-lg">#</span>
+                        <span id="modalIdTextMobile" class="text-indigo-300 font-black tracking-widest font-mono text-base"></span>
+                        <i class="fa-regular fa-copy text-xs text-indigo-400/70 group-hover:text-indigo-200 ml-1"></i>
+                        <!-- Toast Alert inside mobile button -->
+                        <span id="copyToastMobile" class="hidden text-xs text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg ml-2 animate-pulse">
+                            <i class="fa-solid fa-circle-check"></i> คัดลอกแล้ว!
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clean Details and Action Panel (Desktop View - Hidden on Mobile) -->
+            <div class="hidden md:flex flex-1 p-6 sm:p-8 md:p-10 flex-col overflow-y-auto max-h-[55vh] md:max-h-full">
+                <div class="mb-5">
+                    <!-- Premium Standout Click-to-Copy Book ID Badge (Desktop) -->
+                    <div class="hidden md:flex items-center gap-3 mb-4">
+                        <span id="modalIdBadge" onclick="copyIdToClipboard(false)" class="group inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/25 hover:border-indigo-500/40 text-sm sm:text-base font-black text-indigo-300 tracking-widest font-mono cursor-pointer transition-all duration-200 shadow-sm" title="คลิกเพื่อคัดลอกรหัส">
+                            <i class="fa-solid fa-hashtag text-indigo-400"></i>
+                            <span id="modalIdText"></span>
+                            <i class="fa-regular fa-copy text-xs text-indigo-400/70 group-hover:text-indigo-200 ml-1"></i>
+                        </span>
+                        <!-- Tiny Notification Toast Inside Modal Info Panel -->
+                        <span id="copyToast" class="hidden text-xs text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-xl transition-all duration-200 animate-pulse">
+                            <i class="fa-solid fa-circle-check mr-1"></i> คัดลอกแล้ว!
+                        </span>
+                    </div>
+                    <h2 id="modalTitle" class="font-black text-white leading-tight line-clamp-2"></h2>
+                </div>
+
+                <div class="space-y-4 md:space-y-4 border-t border-b border-space-800/60 py-5 md:py-6 mb-5 text-sm md:text-base">
+                    <div class="flex items-start">
+                        <span class="w-24 md:w-32 text-slate-500 shrink-0 font-medium">ผู้ประพันธ์:</span>
+                        <span id="modalAuthor" class="text-slate-200 font-semibold"></span>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="w-24 md:w-32 text-slate-500 shrink-0 font-medium">ISBN:</span>
+                        <span id="modalIsbn" class="text-slate-200 font-mono tracking-wider"></span>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="w-24 md:w-32 text-slate-500 shrink-0 font-medium">ภาควิชา:</span>
+                        <span id="modalDept" class="text-slate-200 font-semibold"></span>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="w-24 md:w-32 text-slate-500 shrink-0 font-medium">จำนวนคงเหลือ:</span>
+                        <span id="modalStock" class="font-bold"></span>
+                    </div>
+                </div>
+
+                <div class="mt-auto">
+                    <div id="modalPricingBox" class="flex items-center justify-between bg-space-950/60 p-4 rounded-2xl mb-4 border border-space-800">
+                        <div>
+                            <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">ราคาบุคคลทั่วไป</span>
+                            <span id="modalPriceGen" class="text-lg sm:text-xl md:text-2xl font-black text-slate-200"></span>
+                        </div>
+                        <div class="text-right">
+                            <span class="block text-xs text-emerald-400 font-bold uppercase tracking-wider mb-1">ราคานักศึกษา</span>
+                            <span id="modalPriceStd" class="text-lg sm:text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-300"></span>
+                        </div>
+                    </div>
+
+                    <div id="modalDiscountBadge" class="hidden text-center mb-5 py-2.5 px-4 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-300 font-semibold text-sm shadow-inner animate-blink"></div>
+
+                    <div class="hidden md:flex flex-col gap-3 pb-2">
+                        <a id="modalExternalLink" href="#" target="_blank" class="w-full py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white rounded-xl text-center text-sm md:text-base font-bold transition-all shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2 border border-indigo-500/30">
+                            <i class="fa-solid fa-up-right-from-square text-base"></i> เปิดดูไฟล์เต็มผ่าน Google Drive
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-space-950 border-t border-space-900 py-8 pb-32 text-center text-xs text-slate-400 mt-auto">
+        <p class="font-bold tracking-wider">© 2026 Ed'Catalog : คลังหนังสือวิศวะ</p>
+        <p class="text-slate-500 mt-1.5 font-medium">งานเทคโนโลยีการศึกษา คณะวิศวกรรมศาสตร์ สจล.</p>
+    </footer>
+
+    <!-- JavaScript Parser -->
+    <script>
+        let allBooks = [];
+        let filteredBooks = [];
+        let departments = new Set();
+        let currentPage = 1;
+        let currentModalBook = null;
+
+        // Custom High-Quality SVG Book Cover Generator when original image fails (Guarantees local rendering!)
+        function getSVGPlaceholder(title, bookId) {
+            const shortTitle = title ? title.substring(0, 30) + (title.length > 30 ? '...' : '') : 'No Title';
+            const cleanId = bookId || 'ENG-BOOK';
+            return `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="424" viewBox="0 0 300 424"><rect width="100%" height="100%" fill="%230d1222"/><rect x="10" y="10" width="280" height="404" rx="10" fill="none" stroke="%231f294d" stroke-width="2"/><circle cx="150" cy="160" r="45" fill="%23151c33" stroke="%234f46e5" stroke-width="2"/><path d="M135,150 L165,150 M135,160 L165,160 M135,170 L155,170" stroke="%2306b6d4" stroke-width="3" stroke-linecap="round"/><text x="150" y="250" fill="%2394a3b8" font-family="Sarabun, sans-serif" font-weight="bold" font-size="14" text-anchor="middle">${encodeURIComponent(shortTitle)}</text><text x="150" y="280" fill="%234f46e5" font-family="monospace" font-weight="900" font-size="16" text-anchor="middle">${encodeURIComponent(cleanId)}</text></svg>`;
+        }
+
+        // Dedicated Safe Handler for Image Loading Failures
+        function handleImgLoadError(imgElement, bookTitle, bookId) {
+            imgElement.onerror = null; // Decouple listener immediately to prevent any loops
+            imgElement.src = getSVGPlaceholder(bookTitle, bookId);
+        }
+
+        function getBooksPerPage() {
+            const width = window.innerWidth;
+            if (width >= 1024) { 
+                return 8; 
+            } else if (width >= 768) { 
+                return 6; 
+            } else { 
+                return 6; 
+            }
+        }
+
+        window.addEventListener('resize', () => {
+            renderCatalog();
+        });
+
+        async function copyIdToClipboard(isMobile = false) {
+            const elementId = isMobile ? 'modalIdTextMobile' : 'modalIdText';
+            const toastId = isMobile ? 'copyToastMobile' : 'copyToast';
+            const idText = document.getElementById(elementId).textContent;
+            if (!idText) return;
+            
+            let successful = false;
+            
+            // Standard Clipboard API (Modern secure contexts)
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(idText);
+                    successful = true;
+                }
+            } catch (err) {
+                console.warn("Modern Clipboard API failed, attempting standard fallback:", err);
+            }
+
+            // Fallback Legacy Method (For restricted iframe/sandboxes)
+            if (!successful) {
+                try {
+                    const tempInput = document.createElement('input');
+                    tempInput.value = idText;
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    successful = document.execCommand('copy');
+                    document.body.removeChild(tempInput);
+                } catch (fallbackErr) {
+                    console.error("Critical: Failed to copy ID using fallback:", fallbackErr);
+                }
+            }
+            
+            if (successful) {
+                const toast = document.getElementById(toastId);
+                toast.classList.remove('hidden');
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                }, 2000);
+            }
+        }
+
+        async function fetchBooks() {
+            const sheetUrl = 'https://docs.google.com/spreadsheets/d/1Bm9MmQO72oAFjMkGtIKP3gJL2xOGNJz75LtAdFkyP6o/gviz/tq?tqx=out:json';
+            const skeleton = document.getElementById('skeletonLoader');
+            const errorState = document.getElementById('errorState');
+            const grid = document.getElementById('booksGrid');
+            const emptyState = document.getElementById('emptyState');
+            
+            // Clear past UI States before reloading
+            errorState.classList.add('hidden');
+            grid.classList.add('hidden');
+            emptyState.classList.add('hidden');
+            skeleton.classList.remove('hidden');
+
+            try {
+                const response = await fetch(sheetUrl);
+                if (!response.ok) throw new Error("Network connection failure with Google Sheets.");
+                
+                const text = await response.text();
+                
+                const jsonStart = text.indexOf('({') + 1;
+                const jsonEnd = text.lastIndexOf('})') + 1;
+                const jsonString = text.substring(jsonStart, jsonEnd);
+                const json = JSON.parse(jsonString);
+                
+                const cols = json.table.cols;
+                const rows = json.table.rows;
+                
+                let headers = cols.map(c => c.label ? c.label.trim() : '');
+                let startIndex = 0;
+                
+                if (headers.every(h => h === '') && rows.length > 0) {
+                    headers = rows[0].c.map(cell => cell ? String(cell.v).trim() : '');
+                    startIndex = 1;
+                }
+                
+                const colIndexMap = {
+                    id: -1, title: -1, author: -1, isbn: -1, dept: -1, stock: -1, priceGen: -1, priceStd: -1, cover: -1, sample: -1, year: -1
+                };
+                
+                headers.forEach((h, i) => {
+                    if (!h) return;
+                    h = h.toLowerCase();
+                    if (h.includes('รหัส') || h.includes('code')) colIndexMap.id = i;
+                    else if (h.includes('ชื่อหนังสือ') || h.includes('ชื่อ') || h.includes('title')) colIndexMap.title = i;
+                    else if (h.includes('ผู้เขียน') || h.includes('ผู้แต่ง') || h.includes('ผู้ประพันธ์') || h.includes('author')) colIndexMap.author = i;
+                    else if (h.includes('isbn') || h.includes('รหัสสากล')) colIndexMap.isbn = i;
+                    else if (h.includes('ภาควิชา') || h.includes('สาขา') || h.includes('dept')) colIndexMap.dept = i;
+                    else if (h.includes('จำนวน') || h.includes('คงเหลือ') || h.includes('stock')) colIndexMap.stock = i;
+                    else if (h.includes('บุคคลทั่วไป') || h.includes('ทั่วไป') || h.includes('ราคาปกติ') || h.includes('ปกติ')) colIndexMap.priceGen = i;
+                    else if (h.includes('นักศึกษา') || h.includes('ราคาพิเศษ') || h.includes('พิเศษ')) colIndexMap.priceStd = i;
+                    else if (h.includes('ตัวอย่างปก') || h.includes('ปก') || h.includes('cover')) colIndexMap.cover = i;
+                    else if (h.includes('ตัวอย่างหนังสือ') || h.includes('ตัวอย่าง') || h.includes('sample')) colIndexMap.sample = i;
+                    else if (h.includes('ปีการศึกษา') || h.includes('ปีพิมพ์') || h.includes('ปีที่พิมพ์') || h.includes('ปี') || h.includes('year')) colIndexMap.year = i;
+                });
+                
+                if (colIndexMap.id === -1) colIndexMap.id = 1; 
+                if (colIndexMap.title === -1) colIndexMap.title = 2; 
+                if (colIndexMap.author === -1) colIndexMap.author = 3; 
+                if (colIndexMap.isbn === -1) colIndexMap.isbn = 5; 
+                if (colIndexMap.dept === -1) colIndexMap.dept = 6; 
+                if (colIndexMap.stock === -1) colIndexMap.stock = 7; 
+                if (colIndexMap.priceGen === -1) colIndexMap.priceGen = 8; 
+                if (colIndexMap.priceStd === -1) colIndexMap.priceStd = 9; 
+                if (colIndexMap.cover === -1) colIndexMap.cover = 10; 
+                if (colIndexMap.sample === -1) colIndexMap.sample = 11;
+
+                allBooks = [];
+                departments.clear();
+
+                for (let i = startIndex; i < rows.length; i++) {
+                    const cells = rows[i].c;
+                    if (!cells || cells.length === 0) continue;
+                    
+                    const getCellVal = (idx) => {
+                        if (idx === -1 || idx >= cells.length || !cells[idx]) return '';
+                        return String(cells[idx].v).trim();
+                    };
+                    
+                    const rawId = getCellVal(colIndexMap.id);
+                    if (!rawId || !rawId.toUpperCase().includes('ENG-')) continue; 
+                    
+                    const matchResult = rawId.match(/ENG-\d+/i);
+                    const cleanId = matchResult ? matchResult[0].toUpperCase() : rawId.toUpperCase();
+                    const title = getCellVal(colIndexMap.title);
+                    const author = getCellVal(colIndexMap.author);
+                    const isbn = getCellVal(colIndexMap.isbn) || 'ไม่ระบุ';
+                    const dept = getCellVal(colIndexMap.dept) || 'ทั่วไป';
+                    const stock = parseInt(getCellVal(colIndexMap.stock)) || 0;
+                    const yearVal = getCellVal(colIndexMap.year) || '';
+                    
+                    const parsePrice = (val) => {
+                        if (!val) return 0;
+                        const cleaned = val.replace(/,/g, '');
+                        return parseInt(cleaned) || 0;
+                    };
+                    
+                    const priceGen = parsePrice(getCellVal(colIndexMap.priceGen));
+                    const priceStd = parsePrice(getCellVal(colIndexMap.priceStd));
+                    
+                    const coverUrl = getCellVal(colIndexMap.cover);
+                    const sampleUrl = getCellVal(colIndexMap.sample);
+                    
+                    departments.add(dept);
+                    
+                    allBooks.push({
+                        id: cleanId, title, author, isbn, dept, stock, priceGen, priceStd, coverUrl, sampleUrl, year: yearVal
+                    });
+                }
+                
+                const getNumericId = (idStr) => {
+                    if (!idStr) return 0;
+                    const match = String(idStr).match(/\d+/);
+                    return match ? parseInt(match[0], 10) : 0;
+                };
+
+                allBooks.sort((a, b) => getNumericId(b.id) - getNumericId(a.id));
+
+                buildDropdownFilters();
+                filteredBooks = [...allBooks];
+                renderCatalog();
+                
+                // Hide specific elements inside iframe blocks elegantly
+                try {
+                    if (window.parent && window.parent.document) {
+                        const targetSelectors = ['[aria-label="Information"]', '[aria-label="ข้อมูลเพิ่มเติม"]', '.kd-button', '.google-sites-info-icon'];
+                        targetSelectors.forEach(sel => {
+                            window.parent.document.querySelectorAll(sel).forEach(el => {
+                                el.style.display = 'none';
+                                el.style.opacity = '0';
+                                el.style.pointerEvents = 'none';
+                            });
+                        });
+                    }
+                } catch(e) {}
+                
+            } catch (error) {
+                console.error("Critical error while reading Google Sheets data: ", error);
+                skeleton.classList.add('hidden');
+                grid.classList.add('hidden');
+                emptyState.classList.add('hidden');
+                errorState.classList.remove('hidden');
+            }
+        }
+
+        // Fully Responsive Direct Image Link Extractor (Detects both URL structures of Drive)
+        function getDriveDirectLink(url) {
+            if (!url) return '';
+            
+            // Format 1: /d/DRIVE_ID/view...
+            let driveIdMatch = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+            if (driveIdMatch && driveIdMatch[1]) {
+                return `https://lh3.googleusercontent.com/d/${driveIdMatch[1]}`;
+            }
+            
+            // Format 2: ?id=DRIVE_ID or &id=DRIVE_ID
+            driveIdMatch = url.match(/[?&]id=([a-zA-Z0-9-_]+)/);
+            if (driveIdMatch && driveIdMatch[1]) {
+                return `https://lh3.googleusercontent.com/d/${driveIdMatch[1]}`;
+            }
+            
+            return url;
+        }
+
+        function getDrivePreviewLink(url) {
+            if (!url) return '#';
+            
+            let driveIdMatch = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+            if (driveIdMatch && driveIdMatch[1]) {
+                return `https://drive.google.com/file/d/${driveIdMatch[1]}/view?usp=drivesdk`;
+            }
+            
+            driveIdMatch = url.match(/[?&]id=([a-zA-Z0-9-_]+)/);
+            if (driveIdMatch && driveIdMatch[1]) {
+                return `https://drive.google.com/file/d/${driveIdMatch[1]}/view?usp=drivesdk`;
+            }
+            
+            return url;
+        }
+
+        function buildDropdownFilters() {
+            const deptSelect = document.getElementById('deptFilter');
+            deptSelect.innerHTML = '<option value="all">เลือกภาควิชา</option>';
+            const sortedDepts = Array.from(departments).sort();
+            sortedDepts.forEach(dept => {
+                const opt = document.createElement('option');
+                opt.value = dept;
+                opt.textContent = dept;
+                deptSelect.appendChild(opt);
+            });
+        }
+
+        function clearSearch() {
+            const search = document.getElementById('searchInput');
+            search.value = '';
+            document.getElementById('clearSearchBtn').classList.add('hidden');
+            handleFilter();
+        }
+
+        function handleDropdownFilter() {
+            currentPage = 1;
+            executeSearchAndFilter();
+        }
+
+        function handleFilter() {
+            currentPage = 1;
+            executeSearchAndFilter();
+        }
+
+        function executeSearchAndFilter() {
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            const selectedDept = document.getElementById('deptFilter').value;
+            const clearBtn = document.getElementById('clearSearchBtn');
+            
+            if (query) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+
+            filteredBooks = allBooks.filter(book => {
+                const matchesSearch = (
+                    (book.id && book.id.toLowerCase().includes(query)) ||
+                    (book.title && book.title.toLowerCase().includes(query)) ||
+                    (book.author && book.author.toLowerCase().includes(query)) ||
+                    (book.isbn && book.isbn.toLowerCase().includes(query))
+                );
+                const matchesDept = (selectedDept === 'all' || book.dept === selectedDept);
+                return matchesSearch && matchesDept;
+            });
+
+            renderCatalog();
+        }
+
+        function renderCatalog() {
+            const grid = document.getElementById('booksGrid');
+            const skeleton = document.getElementById('skeletonLoader');
+            const emptyState = document.getElementById('emptyState');
+            const paginationContainer = document.getElementById('paginationContainer');
+            
+            skeleton.classList.add('hidden');
+            
+            if (filteredBooks.length === 0) {
+                grid.classList.add('hidden');
+                paginationContainer.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            grid.classList.remove('hidden');
+            paginationContainer.classList.remove('hidden');
+            grid.innerHTML = '';
+            
+            const currentBooksPerPage = getBooksPerPage();
+            
+            const startIndex = (currentPage - 1) * currentBooksPerPage;
+            const endIndex = startIndex + currentBooksPerPage;
+            const paginatedBooks = filteredBooks.slice(startIndex, endIndex);
+            
+            paginatedBooks.forEach(book => {
+                const card = document.createElement('div');
+                card.className = "group cursor-pointer bg-space-900/40 border border-space-800/80 rounded-3xl p-4 flex flex-col justify-between hover:border-indigo-500/30 hover:bg-space-900/80 shadow-md hover:shadow-indigo-500/5 transition-all duration-300";
+                card.onclick = () => openModal(book);
+                
+                const coverSrc = getDriveDirectLink(book.coverUrl);
+                
+                let discountTag = '';
+                if (book.priceStd > 0 && book.priceGen > book.priceStd) {
+                    const pct = Math.round(((book.priceGen - book.priceStd) / book.priceGen) * 100);
+                    discountTag = `<span class="absolute top-3 left-3 bg-gradient-to-r from-rose-500 via-pink-500 to-neon-rose text-white text-[11px] font-black px-3 py-1 rounded-xl tracking-wider uppercase shadow-lg shadow-rose-500/35 z-10 border border-rose-400/20 animate-blink"><i class="fa-solid fa-fire mr-1"></i>ลดพิเศษ ${pct}%</span>`;
+                }
+                
+                const stockBadge = book.stock > 0 
+                    ? `<span class="bg-emerald-500/10 text-emerald-300 text-[10px] font-semibold px-2 py-0.5 rounded-md border border-emerald-500/20"><i class="fa-solid fa-check mr-1 text-[8px]"></i>เหลือ ${book.stock} เล่ม</span>`
+                    : `<span class="bg-rose-500/10 text-rose-300 text-[10px] font-semibold px-2 py-0.5 rounded-md border border-rose-500/20"><i class="fa-solid fa-circle-minus mr-1 text-[8px]"></i>สินค้าหมด</span>`;
+
+                const escapedTitle = book.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+                card.innerHTML = `
+                    <div class="relative overflow-hidden rounded-2xl w-full aspect-[1/1.414] mb-3 bg-space-950 flex items-center justify-center">
+                        ${discountTag}
+                        <img 
+                            src="${coverSrc}" 
+                            alt="${escapedTitle}" 
+                            class="w-full h-full object-contain rounded-2xl group-hover:scale-105 transition-transform duration-300 pointer-events-none"
+                            onerror="handleImgLoadError(this, '${escapedTitle}', '${book.id}');"
+                        >
+                        <div class="absolute inset-0 bg-space-950/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <span class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl shadow-lg flex items-center gap-1.5 transform translate-y-2 group-hover:translate-y-0 transition-all">
+                                <i class="fa-solid fa-book-open"></i> คลิกเพื่อพรีวิวเล่มนี้
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex-grow flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-2.5">
+                                <span class="text-[14px] font-black text-indigo-400 tracking-wider font-mono bg-indigo-500/10 px-2 py-0.5 rounded-md border border-indigo-500/15">${book.id}</span>
+                                ${stockBadge}
+                            </div>
+                            <h3 class="text-sm sm:text-base font-bold text-slate-100 line-clamp-2 leading-snug group-hover:text-indigo-300 transition-colors duration-200">
+                                ${book.title}
+                            </h3>
+                            <p class="text-[11px] sm:text-xs text-slate-400 mt-1 line-clamp-2 h-8 leading-tight">
+                                ${book.author}
+                            </p>
+                        </div>
+                        <div class="mt-3 pt-2.5 border-t border-space-800/80 flex items-end justify-between">
+                            <div>
+                                <span class="block text-[9px] text-slate-400 uppercase tracking-wider font-semibold mb-0.5">ราคาบุคคลทั่วไป</span>
+                                <span class="text-sm sm:text-base font-extrabold text-slate-200">${book.priceGen ? book.priceGen + ' บาท' : '-'}</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="block text-[9px] text-emerald-400 uppercase tracking-wider font-semibold mb-0.5">ราคานักศึกษา</span>
+                                <span class="text-sm sm:text-base font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-200">
+                                    ${book.priceStd > 0 ? book.priceStd + ' บาท' : 'รออัปเดต'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            renderPagination(currentBooksPerPage);
+        }
+
+        function renderPagination(currentBooksPerPage) {
+            const container = document.getElementById('paginationContainer');
+            container.innerHTML = '';
+            
+            const totalPages = Math.ceil(filteredBooks.length / currentBooksPerPage);
+            if (totalPages <= 1) return;
+            
+            const prevBtn = document.createElement('button');
+            prevBtn.className = `w-10 h-10 rounded-xl flex items-center justify-center border transition-all text-sm ${currentPage === 1 ? 'border-space-800/40 text-slate-600 cursor-not-allowed' : 'border-space-800 bg-space-900 text-slate-300 hover:bg-space-800 hover:text-white'}`;
+            prevBtn.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
+            prevBtn.disabled = (currentPage === 1);
+            prevBtn.onclick = () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderCatalog();
+                    window.scrollTo({ top: 320, behavior: 'smooth' });
+                }
+            };
+            container.appendChild(prevBtn);
+            
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                const isActive = (i === currentPage);
+                pageBtn.className = `w-10 h-10 rounded-xl flex items-center justify-center border text-sm font-semibold transition-all ${isActive ? 'bg-indigo-600 border-indigo-500 text-white shadow-md shadow-indigo-600/25' : 'border-space-800 bg-space-900 text-slate-400 hover:bg-space-800 hover:text-slate-200'}`;
+                pageBtn.textContent = i;
+                pageBtn.onclick = () => {
+                    currentPage = i;
+                    renderCatalog();
+                    window.scrollTo({ top: 320, behavior: 'smooth' });
+                };
+                container.appendChild(pageBtn);
+            }
+            
+            const nextBtn = document.createElement('button');
+            nextBtn.className = `w-10 h-10 rounded-xl flex items-center justify-center border transition-all text-sm ${currentPage === totalPages ? 'border-space-800/40 text-slate-600 cursor-not-allowed' : 'border-space-800 bg-space-900 text-slate-300 hover:bg-space-800 hover:text-white'}`;
+            nextBtn.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+            nextBtn.disabled = (currentPage === totalPages);
+            nextBtn.onclick = () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderCatalog();
+                    window.scrollTo({ top: 320, behavior: 'smooth' });
+                }
+            };
+            container.appendChild(nextBtn);
+        }
+
+        function openModal(book) {
+            currentModalBook = book;
+            const modal = document.getElementById('bookModal');
+            const overlay = document.getElementById('modalOverlay');
+            const container = document.getElementById('modalContainer');
+            
+            document.getElementById('modalIdText').textContent = book.id;
+            document.getElementById('modalIdTextMobile').textContent = book.id;
+            
+            const modalTitle = document.getElementById('modalTitle');
+            modalTitle.textContent = book.title;
+            
+            // Reapply font sizing safely to avoid clashing Tailwind utilities
+            modalTitle.className = "font-black text-white leading-tight";
+            if (book.title.length > 70) {
+                modalTitle.classList.add("text-lg", "sm:text-xl", "md:text-2xl");
+            } else if (book.title.length > 35) {
+                modalTitle.classList.add("text-xl", "sm:text-2xl", "md:text-2xl", "lg:text-2xl");
+            } else {
+                modalTitle.classList.add("text-xl", "sm:text-2xl", "md:text-2xl", "lg:text-3xl");
+            }
+
+            document.getElementById('modalAuthor').textContent = book.author;
+            document.getElementById('modalIsbn').textContent = book.isbn;
+            document.getElementById('modalDept').textContent = book.dept;
+            
+            const stockEl = document.getElementById('modalStock');
+            if (book.stock > 0) {
+                stockEl.textContent = `พร้อมส่ง ${book.stock} เล่ม`;
+                stockEl.className = "text-emerald-400 font-bold";
+            } else {
+                stockEl.textContent = "สินค้าหมดชั่วคราว";
+                stockEl.className = "text-rose-400 font-bold";
+            }
+            
+            const viewerContainer = document.getElementById('modalViewerContainer');
+            const coverSrc = getDriveDirectLink(book.coverUrl);
+            const escapedTitle = book.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            
+            viewerContainer.innerHTML = `
+                <div class="w-full aspect-[1/1.414] flex items-center justify-center relative rounded-2xl overflow-hidden bg-transparent">
+                    <img 
+                        src="${coverSrc}" 
+                        alt="${escapedTitle}" 
+                        class="w-full h-full object-contain rounded-2xl shadow-2xl pointer-events-none"
+                        onerror="handleImgLoadError(this, '${escapedTitle}', '${book.id}');"
+                    >
+                </div>
+            `;
+
+            const priceGenEl = document.getElementById('modalPriceGen');
+            const priceStdEl = document.getElementById('modalPriceStd');
+            const discountBadgeEl = document.getElementById('modalDiscountBadge');
+            
+            if (book.priceGen > 0) {
+                priceGenEl.textContent = `${book.priceGen} บาท`;
+            } else {
+                priceGenEl.textContent = '-';
+            }
+
+            if (book.priceStd > 0) {
+                priceStdEl.textContent = `${book.priceStd} บาท`;
+                document.getElementById('modalPricingBox').classList.remove('justify-center');
+                priceGenEl.parentElement.classList.remove('hidden');
+                
+                priceGenEl.className = "text-xl sm:text-2xl md:text-3xl font-black text-slate-200";
+                priceStdEl.className = "text-xl sm:text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-300";
+
+                if (book.priceGen > book.priceStd) {
+                    const savings = book.priceGen - book.priceStd;
+                    const pct = Math.round((savings / book.priceGen) * 100);
+                    discountBadgeEl.innerHTML = `<i class="fa-solid fa-tags mr-1.5 text-rose-400"></i> ราคานักศึกษาประหยัดทันที <span class="text-rose-400 font-extrabold underline decoration-rose-500/50 underline-offset-4">${savings} บาท</span> (-${pct}%)`;
+                    discountBadgeEl.classList.remove('hidden');
+                } else {
+                    discountBadgeEl.classList.add('hidden');
+                }
+            } else {
+                priceStdEl.textContent = `สอบถามราคานักศึกษา`;
+                priceStdEl.className = "text-sm sm:text-base md:text-lg font-bold text-neon-amber";
+                priceGenEl.parentElement.classList.add('hidden');
+                discountBadgeEl.classList.add('hidden');
+            }
+
+            const driveExternalBtn = document.getElementById('modalExternalLink');
+            if (book.sampleUrl) {
+                driveExternalBtn.href = getDrivePreviewLink(book.sampleUrl);
+                driveExternalBtn.classList.remove('hidden');
+            } else {
+                driveExternalBtn.classList.add('hidden');
+            }
+
+            const driveExternalBtnMobile = document.getElementById('modalExternalLinkMobile');
+            if (book.sampleUrl) {
+                driveExternalBtnMobile.href = getDrivePreviewLink(book.sampleUrl);
+                driveExternalBtnMobile.parentElement.classList.remove('hidden');
+            } else {
+                driveExternalBtnMobile.parentElement.classList.add('hidden');
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.classList.add('overflow-hidden');
+            
+            // Premium microtask animation loop
+            requestAnimationFrame(() => {
+                overlay.classList.remove('opacity-0');
+                overlay.classList.add('opacity-100');
+                container.classList.remove('scale-95', 'opacity-0');
+                container.classList.add('scale-100', 'opacity-100');
+            });
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('bookModal');
+            const overlay = document.getElementById('modalOverlay');
+            const container = document.getElementById('modalContainer');
+            
+            overlay.classList.remove('opacity-100');
+            overlay.classList.add('opacity-0');
+            container.classList.remove('scale-100', 'opacity-100');
+            container.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.body.classList.remove('overflow-hidden');
+                document.getElementById('modalViewerContainer').innerHTML = '';
+            }, 300);
+        }
+
+        window.onload = function() {
+            fetchBooks();
+        };
+    </script>
+</body>
+</html>
+```
+eof
