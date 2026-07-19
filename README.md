@@ -1,1 +1,0 @@
-# Ed-Catalog
